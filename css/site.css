@@ -9,7 +9,9 @@ body{
 }
 a{color:#5a5a5a;text-decoration:none}
 a:hover{color:#e87830}
-.home{display:inline-block}
+/* A block (not inline-block) so the menu below never moves when the animated
+   logo's last text line changes. */
+.home{display:block;width:fit-content;max-width:100%}
 
 /* The logo is plain text; js/logo.js animates it. */
 .logo{
