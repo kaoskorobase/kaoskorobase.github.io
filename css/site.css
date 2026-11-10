@@ -1,0 +1,31 @@
+/* declared volatile: the whole stylesheet. System fonts only. */
+
+*{box-sizing:border-box}
+html{background:#fff;color-scheme:light;-webkit-text-size-adjust:100%}
+body{
+  margin:0;padding:1.5rem;
+  font:16px/1.7 ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono","Courier New",monospace;
+  color:#333;background:#fff;
+}
+a{color:#5a5a5a;text-decoration:none}
+a:hover{color:#e87830}
+.home{display:inline-block}
+
+/* The logo is plain text; js/logo.js animates it. */
+.logo{
+  font-size:1.1em;line-height:1.2;
+  min-height:6em; /* reserve the animation's height so the page doesn't jump */
+  font-variant-ligatures:none;
+  color:#666;white-space:pre;
+}
+.logo .curve{color:#c00}
+.logo .digit{color:#e87830}
+
+nav{margin-top:.7em;font-size:1.1em}
+nav a+a{margin-left:1rem}
+
+@media (min-width:48em){body{padding-left:3rem;padding-right:3rem}}
+@media (min-width:64em){body{padding-left:4rem;padding-right:4rem}}
+
+/* Narrow screens: scale the logo so the whole picture fits */
+@media (max-width:34.5em){.logo{font-size:calc((100vw - 4rem)/23);max-width:100%;overflow:hidden}}
