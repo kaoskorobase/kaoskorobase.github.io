@@ -1,0 +1,21 @@
+/* plum: dark, the synth family of the avatar (plum, cream, pink, teal, orange).
+   Also the default (no chosen theme) when the system prefers dark; the
+   variables therefore appear twice, keep both blocks identical. The default
+   rules of cream.css and plum.css are mutually exclusive (media queries), so
+   the order in which the files are linked does not matter. */
+:root[data-theme="plum"]{
+  --scheme:dark;
+  --bg:#1e1437; --fg:#f5f0e1;
+  --link:#f5f0e1; --link-strong:#f5f0e1; --link-hover:#ffbe3c;
+  --title:#f5f0e1; --wave:#ff5a8c; --digit:#46c8be;
+  --icon:#ff963c; --accent:#ff963c; --dim:#a092c8;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme]){
+    --scheme:dark;
+    --bg:#1e1437; --fg:#f5f0e1;
+    --link:#f5f0e1; --link-strong:#f5f0e1; --link-hover:#ffbe3c;
+    --title:#f5f0e1; --wave:#ff5a8c; --digit:#46c8be;
+    --icon:#ff963c; --accent:#ff963c; --dim:#a092c8;
+  }
+}

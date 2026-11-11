@@ -255,13 +255,13 @@
         var ch = cell ? cell[0] : ' ';
         var k = cell ? cell[1] : null;
         if (k !== cls && buf) {
-          line += cls ? '<span class="' + cls + '">' + buf + '</span>' : buf;
+          line += cls ? '<span class="' + cls + ' r' + r + '">' + buf + '</span>' : buf;
           buf = '';
         }
         cls = k;
         buf += esc(ch);
       }
-      if (buf) line += cls ? '<span class="' + cls + '">' + buf + '</span>' : buf;
+      if (buf) line += cls ? '<span class="' + cls + ' r' + r + '">' + buf + '</span>' : buf;
       out.push(line.replace(/\s+$/, ''));
     }
     el.innerHTML = out.join('\n');

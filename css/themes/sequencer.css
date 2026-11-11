@@ -1,0 +1,11 @@
+/* sequencer: near-black, each logo row and menu row coloured like a drum track
+   (kick coral, snare amber, hats cyan, percussion violet) */
+:root[data-theme="sequencer"]{
+  --scheme:dark;
+  --bg:#0e0e18; --fg:#f5f0e1;
+  --link:#f5f0e1; --link-strong:#f5f0e1; --link-hover:#ffbe3c;
+  --title:#f5f0e1; --wave:#46dce6; --digit:#46c8be;
+  --wave-0:#ff5f56; --wave-1:#ffbe3c; --wave-2:#46dce6; --wave-3:#aa78ff; --wave-4:#ff5a8c;
+  --icon:#46dce6; --icon-1:#ff5f56; --icon-2:#46dce6; --icon-3:#aa78ff;
+  --accent:#ffbe3c; --dim:#9696af;
+}

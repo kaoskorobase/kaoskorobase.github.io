@@ -7,9 +7,10 @@ third-party requests.
 
 ```
 index.html     page, static fallback logo, menu markup, SVG icon sprite
-css/site.css   the whole stylesheet
+css/site.css   layout and structure; every colour is a variable
+css/themes/    one file per colour theme (cream, plum, classic, sequencer)
 js/logo.js     animated logo (configured by CONFIG at the top)
-js/menu.js     menu: mail decode, "running" animation, m/g shortcuts
+js/menu.js     menu: mail decode, "running" animation, theme switcher, m/g/t keys
 CNAME          custom domain; do not delete or edit
 ```
 
@@ -27,6 +28,9 @@ Work on a branch and open a PR; merging to `main` deploys.
   not its font size. If you add responsive font sizes, `logo.js` still adapts
   (it measures the real character width and available width on every resize),
   but check the `min-height` note below.
+- **No hardcoded colours** in `site.css`, `logo.js` or `menu.js`. Colours
+  come from theme variables (see Themes), so every theme can restyle
+  everything.
 - **The mail address is not in the HTML.** `js/menu.js` decodes it from rot13
   at runtime to keep it from scrapers. Do not paste the address or a `mailto:`
   into `index.html`.
@@ -44,6 +48,37 @@ Work on a branch and open a PR; merging to `main` deploys.
   change the other, or the page jumps when JS takes over.
 - `logo.js` sizes itself from the body's content width, so changing the page
   padding automatically changes the logo's width.
+
+## Themes
+
+`css/site.css` only uses variables (`--bg`, `--fg`, `--link`, `--link-strong`,
+`--link-hover`, `--title`, `--wave`, `--digit`, `--icon`, `--accent`, `--dim`,
+`--scheme`). A theme file `css/themes/<name>.css` sets them under
+`:root[data-theme="<name>"]`. Optional variables have fallbacks:
+`--wave-0..4` (colour per logo row, falls back to `--wave`), `--icon-1..3`
+(per menu row, falls back to `--icon`), `--wave-shadow` / `--digit-shadow`
+(default none).
+
+- **Themes:** `cream` (light), `plum` (dark), `classic` (the original light
+  scheme), `sequencer` (near-black, rows coloured like drum tracks). The
+  palette comes from the kaoskorobase-avatar repo.
+- **`auto`** is the default: no `data-theme` attribute, so the CSS follows the
+  system setting: cream for light, plum for dark. Those two default rules live
+  in `cream.css` and `plum.css` inside mutually exclusive media queries
+  (`not all and (prefers-color-scheme: dark)` and `(prefers-color-scheme:
+  dark)`), so the order of the `<link>` tags does not matter. Each of those two
+  files therefore lists its variables twice; keep the two blocks identical.
+- **Choosing:** the `theme` menu row (or `t`) cycles `THEMES` in `menu.js`
+  (cream, plum, classic, sequencer, auto), sets `data-theme` and stores it in
+  `localStorage['theme']`; `auto` removes both. A script in the `<head>` of
+  `index.html` applies the stored name before first paint and drops it if no
+  such theme exists.
+- **Adding a theme:** create `css/themes/<name>.css`, add a `<link>` for it in
+  `index.html`, add the name to `THEMES` in `menu.js`. Aim for 4.5:1 contrast
+  for text and 3:1 for decorative glyphs against the theme's `--bg`.
+- `logo.js` tags every coloured run with `curve` or `digit` plus its row
+  (`r0`..`r4`); that is what the per-row variables hook into. The static logo
+  in `index.html` has no row classes, so without JS it takes the base colours.
 
 ## Logo
 
@@ -115,7 +150,9 @@ Each link is a `.tool` row in `<nav class="menu">`: an `<a>` with an icon, a
 `.spin` span and a `.res` result line. Icons are `currentColor` SVG
 `<symbol>`s in the sprite at the top of `<body>` (GitHub mark from Octicons,
 MIT). To add a link: add a symbol and a `.tool` row, and a key in `menu.js` if
-wanted. Result lines show the destination without repeating the handle.
+wanted. Result lines show the destination without repeating the handle. The `theme`
+row is hidden until `menu.js` reveals it (it needs JS); its result line shows
+the current theme, e.g. `auto (plum)`.
 
 ## Testing
 
@@ -128,7 +165,10 @@ on and off:
 - the menu's top edge takes exactly one value over a few hundred frames;
 - the widest logo line equals `cols` for that width, and the tail has no
   glitch characters on rows 0 and 4;
-- with JS off, the static logo and the github row show.
+- with JS off, the static logo and the github row show;
+- with the system set to light and to dark (Playwright `color_scheme`), `auto`
+  gives cream and plum respectively, with and without JS, and every theme
+  in `THEMES` can be cycled through without console errors.
 
 A screenshot is one random frame of the animation; sample many frames before
 judging it.

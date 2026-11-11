@@ -1,0 +1,8 @@
+/* classic: the original light scheme */
+:root[data-theme="classic"]{
+  --scheme:light;
+  --bg:#fff; --fg:#333;
+  --link:#5a5a5a; --link-strong:#444; --link-hover:#e87830;
+  --title:#666; --wave:#c00; --digit:#e87830;
+  --icon:#e87830; --accent:#e87830; --dim:#999;
+}
