@@ -1,16 +1,19 @@
 /*
  * The menu: reveals the mail link (its address is only decoded here, so it
  * stays out of the page source), plays a short "running" animation and adds
- * the m / g / t keyboard shortcuts. The `theme` row cycles the colour themes
- * in css/themes/ (or `auto`, which follows the system's light/dark setting)
- * and remembers the choice in localStorage.
+ * the m / g / t keyboard shortcuts. The icon-only toggle button switches
+ * dark / light / auto and remembers the choice in localStorage.
  */
 (function () {
   'use strict';
 
-  // 'auto' = no data-theme attribute: the CSS follows the system's light/dark
-  // setting (cream or plum). The others are css/themes/<name>.css.
-  var THEMES = ['cream', 'plum', 'classic', 'sequencer', 'auto'];
+  // The toggle offers dark (plum), light (cream) and auto. 'auto' = no
+  // data-theme attribute: the CSS follows the system's light/dark setting.
+  // Other themes in css/themes/ still work via data-theme but are not offered.
+  // The cycle starts with the opposite of the system setting, then the same
+  // as the system, then auto.
+  var ICONS = { plum: 'i-moon', cream: 'i-sun', auto: 'i-auto' };
+  var NAMES = { plum: 'dark', cream: 'light', auto: 'auto (follows system)' };
   var root = document.documentElement;
   var rows = [].slice.call(document.querySelectorAll('.menu .tool'));
   var mail = document.querySelector('.menu a.mail');
@@ -28,22 +31,23 @@
     mail.parentNode.hidden = false;      // the row stays hidden without JS
   }
 
-  var themeLink = document.querySelector('.menu a.theme');
-
   var dark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
-
-  function themeLabel() {
-    var t = root.dataset.theme;
-    return t || 'auto (' + (dark && dark.matches ? 'plum' : 'cream') + ')';
-  }
+  var toggle = document.querySelector('.theme-toggle');
 
   function showTheme() {
-    themeLink.parentNode.querySelector('.res').textContent = '\u2514 ' + themeLabel();
+    var t = root.dataset.theme;
+    if (!ICONS[t]) t = 'auto';
+    var label = 'Colour theme: ' + NAMES[t];
+    toggle.querySelector('use').setAttribute('href', '#' + ICONS[t]);
+    toggle.setAttribute('aria-label', label);
+    toggle.title = label;
   }
 
   function nextTheme() {
-    var i = THEMES.indexOf(root.dataset.theme || 'auto');
-    var name = THEMES[(i + 1) % THEMES.length];
+    var sysDark = !!(dark && dark.matches);
+    var cycle = sysDark ? ['cream', 'plum', 'auto'] : ['plum', 'cream', 'auto'];
+    var i = cycle.indexOf(root.dataset.theme || 'auto');   // other themes -> first
+    var name = cycle[(i + 1) % cycle.length];
     try {
       if (name === 'auto') {
         root.removeAttribute('data-theme');
@@ -56,11 +60,10 @@
     showTheme();
   }
 
-  if (themeLink) {
+  if (toggle) {
     showTheme();
-    themeLink.parentNode.hidden = false;   // the row stays hidden without JS
-    themeLink.addEventListener('click', function (e) { e.preventDefault(); nextTheme(); });
-    if (dark && dark.addEventListener) dark.addEventListener('change', showTheme);
+    toggle.hidden = false;                 // the button stays hidden without JS
+    toggle.addEventListener('click', nextTheme);
   }
 
   var reduce = window.matchMedia &&
@@ -88,6 +91,6 @@
     if (e.metaKey || e.ctrlKey || e.altKey) return;
     if (e.key === 'm' && mail) mail.click();
     if (e.key === 'g' && github) github.click();
-    if (e.key === 't' && themeLink) nextTheme();
+    if (e.key === 't' && toggle) nextTheme();
   });
 })();

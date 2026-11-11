@@ -10,7 +10,7 @@ index.html     page, static fallback logo, menu markup, SVG icon sprite
 css/site.css   layout and structure; every colour is a variable
 css/themes/    one file per colour theme (cream, plum, classic, sequencer)
 js/logo.js     animated logo (configured by CONFIG at the top)
-js/menu.js     menu: mail decode, "running" animation, theme switcher, m/g/t keys
+js/menu.js     menu: mail decode, "running" animation, theme toggle, m/g/t keys
 CNAME          custom domain; do not delete or edit
 ```
 
@@ -55,8 +55,8 @@ Work on a branch and open a PR; merging to `main` deploys.
 `--link-hover`, `--title`, `--wave`, `--digit`, `--icon`, `--accent`, `--dim`,
 `--scheme`). A theme file `css/themes/<name>.css` sets them under
 `:root[data-theme="<name>"]`. Optional variables have fallbacks:
-`--wave-0..4` (colour per logo row, falls back to `--wave`), `--icon-1..3`
-(per menu row, falls back to `--icon`), `--wave-shadow` / `--digit-shadow`
+`--wave-0..4` (colour per logo row, falls back to `--wave`), `--icon-1..2`
+(per menu row) and `--icon-3` (theme toggle), each falling back to `--icon`, `--wave-shadow` / `--digit-shadow`
 (default none).
 
 - **Themes:** `cream` (light), `plum` (dark), `classic` (the original light
@@ -68,13 +68,18 @@ Work on a branch and open a PR; merging to `main` deploys.
   (`not all and (prefers-color-scheme: dark)` and `(prefers-color-scheme:
   dark)`), so the order of the `<link>` tags does not matter. Each of those two
   files therefore lists its variables twice; keep the two blocks identical.
-- **Choosing:** the `theme` menu row (or `t`) cycles `THEMES` in `menu.js`
-  (cream, plum, classic, sequencer, auto), sets `data-theme` and stores it in
-  `localStorage['theme']`; `auto` removes both. A script in the `<head>` of
+- **Choosing:** the icon-only toggle button after the cursor (or `t`) offers
+  only dark (`plum`), light (`cream`) and `auto`; `classic` and `sequencer`
+  are not exposed but still work through `data-theme` / `localStorage`. The
+  first click goes to the opposite of the system setting, then the same as the
+  system, then `auto`; any other stored theme goes to the first step. The
+  button sets `data-theme` and stores it in `localStorage['theme']`; `auto`
+  removes both, and the icon (moon, sun, half circle) and aria-label follow
+  the state. A script in the `<head>` of
   `index.html` applies the stored name before first paint and drops it if no
   such theme exists.
 - **Adding a theme:** create `css/themes/<name>.css`, add a `<link>` for it in
-  `index.html`, add the name to `THEMES` in `menu.js`. Aim for 4.5:1 contrast
+  `index.html`, it is selectable by setting `data-theme` (add it to the toggle cycle in `menu.js` to expose it). Aim for 4.5:1 contrast
   for text and 3:1 for decorative glyphs against the theme's `--bg`.
 - `logo.js` tags every coloured run with `curve` or `digit` plus its row
   (`r0`..`r4`); that is what the per-row variables hook into. The static logo
@@ -150,9 +155,9 @@ Each link is a `.tool` row in `<nav class="menu">`: an `<a>` with an icon, a
 `.spin` span and a `.res` result line. Icons are `currentColor` SVG
 `<symbol>`s in the sprite at the top of `<body>` (GitHub mark from Octicons,
 MIT). To add a link: add a symbol and a `.tool` row, and a key in `menu.js` if
-wanted. Result lines show the destination without repeating the handle. The `theme`
-row is hidden until `menu.js` reveals it (it needs JS); its result line shows
-the current theme, e.g. `auto (plum)`.
+wanted. Result lines show the destination without repeating the handle. The theme
+toggle is a `<button class="theme-toggle">` inside the nav, hidden until
+`menu.js` reveals it (it needs JS).
 
 ## Testing
 
