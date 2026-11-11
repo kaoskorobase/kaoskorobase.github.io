@@ -1,0 +1,23 @@
+/* cream: light. The plum palette on a cream background: plum text, deeper
+   shades of the same pink, teal and orange, plus a faint cyan misregistration
+   on the wave (the glitch K of the avatar).
+   Also the default (no chosen theme) unless the system prefers dark; the
+   variables therefore appear twice, keep both blocks identical. */
+:root[data-theme="cream"]{
+  --scheme:light;
+  --bg:#f5f0e1; --fg:#1e1437;
+  --link:#1e1437; --link-strong:#1e1437; --link-hover:#c81e5a;
+  --title:#1e1437; --wave:#e0306a; --digit:#087e76;
+  --wave-shadow:-1.5px 0 rgba(0,200,255,.75); --digit-shadow:1px 0 rgba(224,48,106,.45);
+  --icon:#c45600; --accent:#c45600; --dim:#685c86;
+}
+@media not all and (prefers-color-scheme:dark){
+  :root:not([data-theme]){
+    --scheme:light;
+    --bg:#f5f0e1; --fg:#1e1437;
+    --link:#1e1437; --link-strong:#1e1437; --link-hover:#c81e5a;
+    --title:#1e1437; --wave:#e0306a; --digit:#087e76;
+    --wave-shadow:-1.5px 0 rgba(0,200,255,.75); --digit-shadow:1px 0 rgba(224,48,106,.45);
+    --icon:#c45600; --accent:#c45600; --dim:#685c86;
+  }
+}

@@ -1,16 +1,17 @@
-/* declared volatile: the whole stylesheet. System fonts only. */
+/* declared volatile: layout and structure. System fonts only.
+   Every colour is a variable defined by a theme in css/themes/. */
 
 *{box-sizing:border-box}
-html{background:#fff;color-scheme:light;-webkit-text-size-adjust:100%}
+html{background:var(--bg);color-scheme:var(--scheme,light);-webkit-text-size-adjust:100%}
 body{
   margin:0;padding:1.5rem;
   /* One fixed size for the logo and the menu; js/logo.js fits the picture to
      the width instead of scaling the text. */
   font:1.1rem/1.7 ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono","Courier New",monospace;
-  color:#333;background:#fff;
+  color:var(--fg);background:var(--bg);
 }
-a{color:#5a5a5a;text-decoration:none}
-a:hover{color:#e87830}
+a{color:var(--link);text-decoration:none}
+a:hover{color:var(--link-hover)}
 /* A block (not inline-block) so the menu below never moves when the animated
    logo's last text line changes. */
 .home{display:block;width:fit-content;max-width:100%}
@@ -20,23 +21,32 @@ a:hover{color:#e87830}
   line-height:1.2;
   min-height:6em; /* reserve the animation's height so the page doesn't jump */
   font-variant-ligatures:none;
-  color:#666;white-space:pre;
+  color:var(--title);white-space:pre;
   max-width:100%;overflow-x:clip; /* the no-JS fallback is wider than a phone */
 }
-.logo .curve{color:#c00}
-.logo .digit{color:#e87830}
+.logo .curve{color:var(--wave);text-shadow:var(--wave-shadow,none)}
+/* logo.js also tags every run with its row (r0..r4), so a theme can colour rows */
+.logo .r0{color:var(--wave-0,var(--wave))}
+.logo .r1{color:var(--wave-1,var(--wave))}
+.logo .r2{color:var(--wave-2,var(--wave))}
+.logo .r3{color:var(--wave-3,var(--wave))}
+.logo .r4{color:var(--wave-4,var(--wave))}
+.logo .digit{color:var(--digit);text-shadow:var(--digit-shadow,none)}
 
 /* The menu is styled like the output of a coding agent; js/menu.js plays it. */
 .menu{margin-top:.9em}
 .tool{margin:0;white-space:pre}
-.tool a{color:#444}
-.tool a:hover{color:#e87830}
-.ic{width:1.15em;height:1.15em;vertical-align:-.2em;margin-right:.5em;color:#e87830}
-.res{display:block;padding-left:.4em;color:#999}
-.spin{display:none;color:#e87830}
+.tool a{color:var(--link-strong)}
+.tool a:hover{color:var(--link-hover)}
+.ic{width:1.15em;height:1.15em;vertical-align:-.2em;margin-right:.5em;color:var(--icon)}
+.tool:nth-of-type(1) .ic{color:var(--icon-1,var(--icon))}
+.tool:nth-of-type(2) .ic{color:var(--icon-2,var(--icon))}
+.tool:nth-of-type(3) .ic{color:var(--icon-3,var(--icon))}
+.res{display:block;padding-left:.4em;color:var(--dim)}
+.spin{display:none;color:var(--accent)}
 .pending .res{visibility:hidden}
 .pending .spin{display:inline}
-.cur{display:inline-block;width:.6em;height:1.05em;margin-left:.3em;vertical-align:-.15em;background:#e87830;animation:blink 1.1s steps(1) infinite}
+.cur{display:inline-block;width:.6em;height:1.05em;margin-left:.3em;vertical-align:-.15em;background:var(--accent);animation:blink 1.1s steps(1) infinite}
 @keyframes blink{50%{opacity:0}}
 @media (prefers-reduced-motion:reduce){.cur{animation:none}}
 
