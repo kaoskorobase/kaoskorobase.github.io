@@ -4,7 +4,9 @@
 html{background:#fff;color-scheme:light;-webkit-text-size-adjust:100%}
 body{
   margin:0;padding:1.5rem;
-  font:16px/1.7 ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono","Courier New",monospace;
+  /* One fixed size for the logo and the menu; js/logo.js fits the picture to
+     the width instead of scaling the text. */
+  font:1.1rem/1.7 ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono","Courier New",monospace;
   color:#333;background:#fff;
 }
 a{color:#5a5a5a;text-decoration:none}
@@ -15,19 +17,28 @@ a:hover{color:#e87830}
 
 /* The logo is plain text; js/logo.js animates it. */
 .logo{
-  font-size:1.1em;line-height:1.2;
+  line-height:1.2;
   min-height:6em; /* reserve the animation's height so the page doesn't jump */
   font-variant-ligatures:none;
   color:#666;white-space:pre;
+  max-width:100%;overflow-x:clip; /* the no-JS fallback is wider than a phone */
 }
 .logo .curve{color:#c00}
 .logo .digit{color:#e87830}
 
-nav{margin-top:.7em;font-size:1.1em}
-nav a+a{margin-left:1rem}
+/* The menu is styled like the output of a coding agent; js/menu.js plays it. */
+.menu{margin-top:.9em}
+.tool{margin:0;white-space:pre}
+.tool a{color:#444}
+.tool a:hover{color:#e87830}
+.ic{width:1.15em;height:1.15em;vertical-align:-.2em;margin-right:.5em;color:#e87830}
+.res{display:block;padding-left:.4em;color:#999}
+.spin{display:none;color:#e87830}
+.pending .res{visibility:hidden}
+.pending .spin{display:inline}
+.cur{display:inline-block;width:.6em;height:1.05em;margin-left:.3em;vertical-align:-.15em;background:#e87830;animation:blink 1.1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.cur{animation:none}}
 
 @media (min-width:48em){body{padding-left:3rem;padding-right:3rem}}
 @media (min-width:64em){body{padding-left:4rem;padding-right:4rem}}
-
-/* Narrow screens: scale the logo so the whole picture fits */
-@media (max-width:34.5em){.logo{font-size:calc((100vw - 4rem)/23);max-width:100%;overflow:hidden}}

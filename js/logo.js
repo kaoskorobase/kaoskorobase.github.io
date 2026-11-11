@@ -24,7 +24,8 @@
     title: 'declared volatile',
 
     rows: 5,                 // height of the picture in characters
-    cols: 38,                // width of the picture in characters
+    maxCols: 38,             // width on wide screens, in characters
+    minCols: 22,             // never narrower than this
     centerRow: 2,            // the axis; the title and the bits sit on it
 
     // The wave
@@ -36,8 +37,8 @@
     speed: 1,                // whole columns per tick keep the shape crisp
 
     // The glitch tail
-    dissolveFrom: 13,        // column where the wave starts to break up
-    dissolveTo: 37,          // column where it is completely gone
+    dissolveAt: 0.34,        // the wave breaks up at this fraction of the width,
+                             // so narrow screens start the tail earlier
     scatter: 0.7,            // how far (rows) fragments stray; ~0 keeps the tail a line
     glitchChars: ".,'`:;-~*+",
     dust: 0.12,              // density of random speckles in the tail
@@ -51,8 +52,7 @@
     titleGlitchDensity: 0.5, // fraction of touched letters that flip
 
     // The digitised signal
-    bitsCol: 19,
-    bitsLength: 10,
+    bitsMax: 10,             // number of bits on wide screens; fewer on narrow ones
     bitsEvery: 2,            // shift the register every n ticks
 
     tickMs: 110,
@@ -84,7 +84,42 @@
   }
 
   function dissolve(x) {
-    return smoothstep((x - C.dissolveFrom) / (C.dissolveTo - C.dissolveFrom));
+    return smoothstep((x - L.dissolveFrom) / (L.dissolveTo - L.dissolveFrom));
+  }
+
+  // --- layout --------------------------------------------------------------
+  //
+  // The font size is fixed by the page's CSS. The picture adapts to the width
+  // instead: on narrow screens it has fewer columns, fewer bits, and the glitch
+  // tail starts earlier.
+
+  var L = {};                        // cols, dissolveFrom, dissolveTo, bitsCol, bitsLength
+
+  function charWidth() {
+    var probe = document.createElement('span');
+    probe.style.cssText = 'position:absolute;visibility:hidden;white-space:pre';
+    probe.textContent = '0000000000';
+    el.appendChild(probe);
+    var w = probe.getBoundingClientRect().width / 10;
+    el.removeChild(probe);
+    return w || 10;
+  }
+
+  function availableWidth() {
+    var cs = window.getComputedStyle(document.body);
+    return document.body.clientWidth -
+           parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+  }
+
+  function layout() {
+    var T = C.title.length;
+    L.cols = clamp(Math.floor((availableWidth() - 1) / charWidth()),
+                   C.minCols, C.maxCols);
+    L.dissolveFrom = Math.round(C.dissolveAt * L.cols);
+    L.dissolveTo = L.cols - 1;
+    L.bitsCol = T + 2;               // just after the title
+    L.bitsLength = clamp(Math.floor((L.cols - T - 1) / 2), 3, C.bitsMax);
+    fitBits();
   }
 
   // --- the wave ------------------------------------------------------------
@@ -117,9 +152,19 @@
 
   var bits = '00 1 11001'.split('');
 
+  function randomBit() {
+    return Math.random() < 0.2 ? ' ' : Math.random() < 0.5 ? '0' : '1';
+  }
+
+  // Grow or shrink the register to the current width.
+  function fitBits() {
+    while (bits.length > L.bitsLength) bits.shift();
+    while (bits.length < L.bitsLength) bits.push(randomBit());
+  }
+
   function clockBit() {
     bits.shift();
-    bits.push(Math.random() < 0.2 ? ' ' : Math.random() < 0.5 ? '0' : '1');
+    bits.push(randomBit());
   }
 
   // --- the picture ---------------------------------------------------------
@@ -135,12 +180,12 @@
     var g = [], r, x;
     for (r = 0; r < C.rows; r++) {
       g.push([]);
-      for (x = 0; x < C.cols; x++) g[r].push(null);
+      for (x = 0; x < L.cols; x++) g[r].push(null);
     }
 
     var slot = Math.floor(tick / C.holdTicks);
 
-    for (x = 0; x < C.cols; x++) {
+    for (x = 0; x < L.cols; x++) {
       var d = dissolve(x);
       var row = waveRow(x);
       // Fragments are tied to the wave, so they travel with it, but they
@@ -166,7 +211,7 @@
     // A row tears sideways now and then.
     if (tear.ticks > 0) {
       tear.ticks--;
-      for (x = Math.floor(C.dissolveFrom); x < C.cols; x++) {
+      for (x = Math.floor(L.dissolveFrom); x < L.cols; x++) {
         if (hash(x + 8000, tick) < 0.7) {
           g[tear.row][x] = [pickGlitch(x + 9000, tick) === ' ' ? '#' : pickGlitch(x + 9000, tick),
                             TILE_COLORS.wave];
@@ -175,9 +220,9 @@
     }
 
     // The bits sit on the axis, behind the title.
-    for (x = 0; x < C.bitsLength; x++) {
+    for (x = 0; x < L.bitsLength; x++) {
       if (bits[x] !== ' ') {
-        g[C.centerRow][C.bitsCol + x] = [bits[x], TILE_COLORS.bits];
+        g[C.centerRow][L.bitsCol + x] = [bits[x], TILE_COLORS.bits];
       }
     }
 
@@ -185,7 +230,7 @@
     // and then the wave garbles the letters it runs through.
     var glitching = hash(77, Math.floor(tick / C.titleGlitchWindow)) <
                     C.titleGlitchChance;
-    for (x = 0; x < C.title.length && x < C.cols; x++) {
+    for (x = 0; x < C.title.length && x < L.cols; x++) {
       var letter = C.title.charAt(x);
       if (letter === ' ') continue;
       if (glitching && waveRow(x) === C.centerRow &&
@@ -205,7 +250,7 @@
     var g = compose(), out = [];
     for (var r = 0; r < C.rows; r++) {
       var line = '', cls = null, buf = '';
-      for (var x = 0; x < C.cols; x++) {
+      for (var x = 0; x < L.cols; x++) {
         var cell = g[r][x];
         var ch = cell ? cell[0] : ' ';
         var k = cell ? cell[1] : null;
@@ -237,7 +282,14 @@
 
   el.setAttribute('role', 'img');
   el.setAttribute('aria-label', C.title);
+  layout();
   render();
+
+  var resizeTimer = null;
+  window.addEventListener('resize', function () {
+    window.clearTimeout(resizeTimer);
+    resizeTimer = window.setTimeout(function () { layout(); render(); }, 100);
+  });
 
   var reduce = window.matchMedia &&
                window.matchMedia('(prefers-reduced-motion: reduce)').matches;
