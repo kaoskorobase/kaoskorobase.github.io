@@ -41,7 +41,6 @@ a:hover{color:var(--link-hover)}
 .ic{width:1.15em;height:1.15em;vertical-align:-.2em;margin-right:.5em;color:var(--icon)}
 .tool:nth-of-type(1) .ic{color:var(--icon-1,var(--icon))}
 .tool:nth-of-type(2) .ic{color:var(--icon-2,var(--icon))}
-.tool:nth-of-type(3) .ic{color:var(--icon-3,var(--icon))}
 .res{display:block;padding-left:.4em;color:var(--dim)}
 .spin{display:none;color:var(--accent)}
 .pending .res{visibility:hidden}
@@ -52,3 +51,8 @@ a:hover{color:var(--link-hover)}
 
 @media (min-width:48em){body{padding-left:3rem;padding-right:3rem}}
 @media (min-width:64em){body{padding-left:4rem;padding-right:4rem}}
+
+.theme-toggle{appearance:none;background:none;border:0;padding:.2em;margin:-.2em 0 0 .3em;cursor:pointer;color:var(--icon-3,var(--icon));line-height:0;vertical-align:middle}
+.theme-toggle:hover{color:var(--link-hover)}
+.theme-toggle:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.theme-toggle .ic{margin:0;width:1.3em;height:1.3em;vertical-align:0}
